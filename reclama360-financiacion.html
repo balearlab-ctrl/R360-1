@@ -131,11 +131,28 @@ function enviar(){
   if(!t||t.replace(/\D/g,'').length<9){document.getElementById('telefono').focus();document.getElementById('telefono').style.borderColor='#e05252';return}
   var btn=document.querySelector('.btn-submit');
   btn.textContent='Enviando...';btn.disabled=true;
+  var fecha=new Date().toLocaleString('es-ES');
+
+  // Guardar en Google Sheets
   fetch('https://script.google.com/macros/s/AKfycbzSjXa6kSYhoLc4MbW9KBMEvjJj9oHycXZy_g--axi5WhrkgUW4bGSiox55klr8Zfumag/exec',{
-    method:'POST',
-    mode:'no-cors',
+    method:'POST',mode:'no-cors',
     body:JSON.stringify({nombre:n,telefono:t}),
     headers:{'Content-Type':'application/json'}
+  });
+
+  // Enviar email via Resend
+  fetch('https://api.resend.com/emails',{
+    method:'POST',
+    headers:{
+      'Authorization':'Bearer re_JVYmKZzH_JdY2WqD4ftFuU41e7ijEJ9Hr',
+      'Content-Type':'application/json'
+    },
+    body:JSON.stringify({
+      from:'onboarding@resend.dev',
+      to:'info@reclama360.es',
+      subject:'NUEVO CONTACTO DESDE WHATSAPP',
+      text:'Hemos recibido este nuevo contacto desde WhatsApp para Reclama360\n\nHora: '+fecha+'\nNombre: '+n+'\nTeléfono: '+t
+    })
   }).finally(function(){
     document.getElementById('formArea').style.display='none';
     document.getElementById('ok').style.display='block';
