@@ -79,6 +79,8 @@
     .footer p{font-size:11px;color:var(--muted);line-height:1.7}
     .footer a{color:var(--blue);text-decoration:none}
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <script>emailjs.init("-fJYcu7aryGW-wvZi");</script>
 </head>
 <body>
 <div class="hero">
@@ -155,20 +157,16 @@ function enviar(){
     headers:{'Content-Type':'application/json'}
   });
 
-  // Enviar email via Resend
-  fetch('https://api.resend.com/emails',{
-    method:'POST',
-    headers:{
-      'Authorization':'Bearer re_JVYmKZzH_JdY2WqD4ftFuU41e7ijEJ9Hr',
-      'Content-Type':'application/json'
-    },
-    body:JSON.stringify({
-      from:'onboarding@resend.dev',
-      to:'info@reclama360.es',
-      subject:'NUEVO CONTACTO DESDE WHATSAPP',
-      text:'Hemos recibido este nuevo contacto desde WhatsApp para Reclama360\n\nHora: '+fecha+'\nNombre: '+n+'\nTeléfono: '+t
-    })
-  }).finally(function(){
+  // Enviar email via EmailJS
+  emailjs.send('service_6iykp8n','template_w1bsw78',{
+    nombre: n,
+    telefono: t,
+    hora: fecha
+  }).then(function(){
+    document.getElementById('formArea').style.display='none';
+    document.getElementById('ok').style.display='block';
+  }).catch(function(err){
+    console.error('EmailJS error:', err);
     document.getElementById('formArea').style.display='none';
     document.getElementById('ok').style.display='block';
   });
